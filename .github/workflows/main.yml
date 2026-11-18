@@ -16,28 +16,28 @@ jobs:
           submodules: recursive
 
       - name: Clone JUCE
-        working-directory: "fianl snoopy"
+        working-directory: "fianl snoopy/OSOTRUXE"
         run: |
           git clone --depth 1 --branch 8.0.4 https://github.com/juce-framework/JUCE.git JUCE
 
       - name: Configure CMake
-        working-directory: "fianl snoopy"
+        working-directory: "fianl snoopy/OSOTRUXE"
         run: |
           cmake -B build -A x64
 
       - name: Build VST3 & Standalone (Release)
-        working-directory: "fianl snoopy"
+        working-directory: "fianl snoopy/OSOTRUXE"
         run: |
           cmake --build build --config Release --parallel
 
       - name: Stage Installer Files
-        working-directory: "fianl snoopy"
+        working-directory: "fianl snoopy/OSOTRUXE"
         run: |
           mkdir stage
           Copy-Item -Recurse "build\OSOTRUXE_artefacts\Release\VST3\OSOTRUXE.vst3" "stage\OSOTRUXE.vst3"
 
       - name: Build Inno Setup Installer
-        working-directory: "fianl snoopy"
+        working-directory: "fianl snoopy/OSOTRUXE"
         run: |
           iscc OSOTRUXE.iss
 
@@ -46,5 +46,5 @@ jobs:
         with:
           name: OSOTRUXE-Windows-VST3
           path: |
-            fianl snoopy\stage\OSOTRUXE.vst3
-            fianl snoopy\Output\OSOTRUXE_Windows_Installer.exe
+            fianl snoopy\OSOTRUXE\stage\OSOTRUXE.vst3
+            fianl snoopy\OSOTRUXE\Output\OSOTRUXE_Windows_Installer.exe
