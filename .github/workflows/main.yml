@@ -1,1 +1,50 @@
+name: Build Windows VST3 & Installer
 
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Clone JUCE
+        working-directory: "fianl snoopy"
+        run: |
+          git clone --depth 1 --branch 8.0.4 https://github.com/juce-framework/JUCE.git JUCE
+
+      - name: Configure CMake
+        working-directory: "fianl snoopy"
+        run: |
+          cmake -B build -A x64
+
+      - name: Build VST3 & Standalone (Release)
+        working-directory: "fianl snoopy"
+        run: |
+          cmake --build build --config Release --parallel
+
+      - name: Stage Installer Files
+        working-directory: "fianl snoopy"
+        run: |
+          mkdir stage
+          Copy-Item -Recurse "build\OSOTRUXE_artefacts\Release\VST3\OSOTRUXE.vst3" "stage\OSOTRUXE.vst3"
+
+      - name: Build Inno Setup Installer
+        working-directory: "fianl snoopy"
+        run: |
+          iscc OSOTRUXE.iss
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: OSOTRUXE-Windows-VST3
+          path: |
+            fianl snoopy\stage\OSOTRUXE.vst3
+            fianl snoopy\Output\OSOTRUXE_Windows_Installer.exe
